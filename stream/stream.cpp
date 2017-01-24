@@ -28,7 +28,7 @@ int main()
 			return i > 6;
 		})->filter([](const int& i)->bool {
 			return i < 16;
-		})->count();
+		})->skip(4)->limit(4)->count();
 
 	cout << count << endl;
 

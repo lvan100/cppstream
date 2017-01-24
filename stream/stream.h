@@ -32,21 +32,35 @@ template<typename T> class Sink : public ISinkChain {
 
 public:
 	/**
-	 * 数据消费接口
+	 * 数据消费接口，返回是否应该继续遍历
 	 */
-	virtual void consum(const T& value) = 0;
+	virtual bool consum(const T& value) = 0;
 
 };
 
 /**
- * 数据消费器链条的一般节点对象
+ * 数据消费器链条基本实现
  */
 template<typename T, typename D> class SinkChain : public Sink<T> {
 
+protected:
 	/**
 	 * 下游数据消费器指针
 	 */
 	Sink<D>* down = nullptr;
+
+public:
+	virtual ISinkChain* link(ISinkChain* down) override {
+		this->down = (Sink<D>*)down;
+		return this;
+	}
+
+};
+
+/**
+ * 转换类型的数据消费器
+ */
+template<typename T, typename D> class ConvertSink : public SinkChain<T, D> {
 
 	/**
 	 * 当前节点的消费函数
@@ -55,18 +69,66 @@ template<typename T, typename D> class SinkChain : public Sink<T> {
 	Consum _f;
 
 public:
-	SinkChain(Consum f) : _f(f)
+	ConvertSink(Consum f) : _f(f)
 	{}
 
-	virtual ISinkChain* link(ISinkChain* down) override {
-		this->down = (Sink<D>*)down;
-		return this;
-	}
-
-	virtual void consum(const T& v) override {
+	virtual bool consum(const T& v) override {
 		D d = _f(v);
 		if (down != nullptr) {
-			down->consum(d);
+			return down->consum(d);
+		}
+		return true;
+	}
+
+};
+
+/**
+ * 跳跃数据消费节点
+ */
+template<typename T> class SkipSink : public SinkChain<T, T> {
+
+	/**
+	 * 还有多少数据需要被跳过
+	 */
+	int _skip = 0;
+
+public:
+	SkipSink(int skip) : _skip(skip)
+	{}
+
+	virtual bool consum(const T& v) override {
+		if (--_skip < 0) {
+			if (down != nullptr) {
+				return down->consum(v);
+			}
+		}
+		return true;
+	}
+
+};
+
+/**
+ * 限制数据消费节点
+ */
+template<typename T> class LimitSink : public SinkChain<T, T> {
+
+	/**
+	 * 还有多少数据能够被获取
+	 */
+	int _limit = 0;
+
+public:
+	LimitSink(int limit) : _limit(limit)
+	{}
+
+	virtual bool consum(const T& v) override {
+		if (_limit-- > 0) {
+			if (down != nullptr) {
+				return down->consum(v);
+			}
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -75,13 +137,8 @@ public:
 /**
  * 过滤数据消费节点
  */
-template<typename T> class FilterSink : public Sink<T> {
-
-	/**
-	 * 下游数据消费器指针
-	 */
-	Sink<T>* down = nullptr;
-
+template<typename T> class FilterSink : public SinkChain<T, T> {
+	
 	/**
 	 * 当前节点的消费函数
 	 */
@@ -91,17 +148,13 @@ template<typename T> class FilterSink : public Sink<T> {
 public:
 	FilterSink(Consum f) : _f(f)
 	{}
-
-	virtual ISinkChain* link(ISinkChain* down) override {
-		this->down = (Sink<T>*)down;
-		return this;
-	}
-
-	virtual void consum(const T& v) override {
+	
+	virtual bool consum(const T& v) override {
 		bool b = _f(v);
 		if (b && down != nullptr) {
-			down->consum(v);
+			return down->consum(v);
 		}
+		return true;
 	}
 
 };
@@ -109,7 +162,7 @@ public:
 /**
  * 规约数据消费节点
  */
-template<typename T> class ReduceSink : public Sink<T> {
+template<typename T> class ReduceSink : public SinkChain<T, T> {
 
 	/**
 	 * 当前节点的消费函数
@@ -131,8 +184,9 @@ public:
 		return this;
 	}
 
-	virtual void consum(const T& v) override {
+	virtual bool consum(const T& v) override {
 		_value = _f(_value, v);
+		return true;
 	}
 
 	/**
@@ -225,7 +279,7 @@ public:
 	 * 将当前流转换为其他流
 	 */
 	template<typename D> Stream<D>* map(function<D(const T&)> f) {
-		this->_sink = new SinkChain<T, D>(f);
+		this->_sink = new ConvertSink<T, D>(f);
 		return new Stream<D>(this, _splitter);
 	}
 
@@ -268,6 +322,22 @@ public:
 	}
 
 	/**
+	 * 跳过某些正确结果
+	 */
+	Stream* skip(int nSkip) {
+		this->_sink = new SkipSink<T>(nSkip);
+		return new Stream(this, _splitter);
+	}
+
+	/**
+	 * 限制正确结果的数量
+	 */
+	Stream* limit(int nLimit) {
+		this->_sink = new LimitSink<T>(nLimit);
+		return new Stream(this, _splitter);
+	}
+
+	/**
 	 * 对流内的对象进行计数
 	 */
 	virtual int count() override {
@@ -301,8 +371,11 @@ public:
 	{}
 
 	virtual void consum(ISinkChain* sink) override {
+		Sink<T>* tsink = (Sink<T>*)sink;
 		for (int i = 0; i < _size; i++) {
-			((Sink<T>*)sink)->consum(_array[i]);
+			if (!tsink->consum(_array[i])) {
+				break;
+			}
 		}
 	}
 
