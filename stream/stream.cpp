@@ -1,5 +1,10 @@
 #include "stream.h"
 
+#ifdef _DEBUG
+#define DEBUG_NEW new(__FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include <string>
 #include <iostream>
 using namespace std;
@@ -25,7 +30,14 @@ int main()
 			return i < 16;
 		})->count();
 
-	cout << count;
+	cout << count << endl;
+
+	//这一行是为了检验内存泄漏检测真实有效
+	new int(5);
+
+#ifdef _DEBUG
+	theMemList.dump();
+#endif
 
 	return 0;
 }

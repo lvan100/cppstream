@@ -1,5 +1,12 @@
 #pragma once
 
+#include "new.h"
+
+#ifdef _DEBUG
+#define DEBUG_NEW new(__FILE__, __LINE__)
+#define new DEBUG_NEW
+#endif
+
 #include "assert.h"
 
 #include <functional>
@@ -287,7 +294,7 @@ template<typename T> class ArraySplitter : public Splitter {
 	 * 数组元素的指针
 	 */
 	T* _array = nullptr;
-
+	
 public:
 	ArraySplitter(T* arr, int size)
 		: _array(arr), _size(size)

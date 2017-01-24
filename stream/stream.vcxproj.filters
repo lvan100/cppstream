@@ -3,6 +3,7 @@
   <ItemGroup>
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="stream.h" />
+    <ClInclude Include="new.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stream.cpp" />
