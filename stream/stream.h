@@ -432,6 +432,46 @@ namespace cpp {
 			return (new ArrayDataSource<T>(arr, size))->stream();
 		}
 
+		template<typename T, typename Sink>
+		auto operator >> (Stream<T>* s, Sink sink) {
+			return sink(s);
+		}
+
+		template<typename T, typename D>
+		auto map(function<D(const T&)> f) {
+			return [f](Stream<T>* s) {
+				return s->map<D>(f);
+			};
+		};
+
+		template<typename T>
+		auto filter(function<bool(const T&)> f) {
+			return [f](Stream<T>* s) {
+				return s->filter(f);
+			};
+		}
+
+		template<typename T>
+		auto skip(int nSkip) {
+			return [nSkip](Stream<T>* s) {
+				return s->skip(nSkip);
+			};
+		}
+
+		template<typename T>
+		auto limit(int nLimit) {
+			return [nLimit](Stream<T>* s) {
+				return s->limit(nLimit);
+			};
+		}
+
+		template<typename T>
+		auto _count() {
+			return [](Stream<T>* s) {
+				return s->count();
+			};
+		}
+
 	}
 }
 
