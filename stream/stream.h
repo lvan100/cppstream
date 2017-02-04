@@ -3,7 +3,7 @@
 #include "new.h"
 
 #ifdef _DEBUG
-#define DEBUG_NEW new(__FILE__, __LINE__)
+#define DEBUG_NEW new(__FILE__, __FUNCTION__ ,__LINE__)
 #define new DEBUG_NEW
 #endif
 
@@ -332,9 +332,15 @@ namespace cpp {
 
 				T result = sink->get();
 
-				// 从流的最终节点开始释放
-				delete this;
+				// 释放计算过程中使用的指针资源
+				{
+					if (dataSource != nullptr) {
+						delete dataSource;
+					}
 
+					delete this;
+				}
+				
 				return result;
 			}
 
@@ -421,5 +427,15 @@ namespace cpp {
 
 		};
 
+		template<typename T>
+		Stream<T>* make_stream(T* arr, int size) {
+			return (new ArrayDataSource<T>(arr, size))->stream();
+		}
+
 	}
 }
+
+#ifdef _DEBUG
+#undef new
+#undef DEBUG_NEW
+#endif
