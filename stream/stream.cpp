@@ -1,4 +1,5 @@
 #include "stream.h"
+using namespace cpp::stream;
 
 #ifdef _DEBUG
 #define DEBUG_NEW new(__FILE__, __LINE__)
@@ -15,7 +16,7 @@ int main()
 {
 	ST3 it[20] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
-	int count = ArraySplitter<ST3>(it, __crt_countof(it))
+	int count = ArrayDataSource<ST3>(it, __crt_countof(it))
 		.stream()->map<ST2>([](const ST3& st)->ST2 {
 			return st.st2;
 		})->map<ST1>([](const ST2& st)->ST1 {
