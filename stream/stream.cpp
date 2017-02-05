@@ -12,18 +12,36 @@ using namespace std;
 
 #include "typedefs.h"
 
+template <typename F>
+typename ft_0<F>::ret foo(F f) {
+	return f();
+}
+
+template <typename F, typename T>
+typename ft_1<F, T>::ret foo(F f, T t) {
+	return f(t);
+}
+
 int main()
 {
+	foo([]() {
+		return 3;
+	});
+
+	foo([](int i) {
+		return i + 3;
+	}, 4);
+
 	ST3 arr[20] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
 
 	int count = make_stream(arr, __crt_countof(arr))
-		->map<ST2>([](const ST3& st)->ST2 {
+		->map([](const ST3& st)->ST2 {
 			return st.st2;
-		})->map<ST1>([](const ST2& st)->ST1 {
+		})->map([](const ST2& st)->ST1 {
 			return st.st1;
-		})->map<ST0>([](const ST1& st)->ST0 {
+		})->map([](const ST1& st)->ST0 {
 			return st.st0;
-		})->map<int>([](const ST0& st)->int {
+		})->map([](const ST0& st)->int {
 			return st.i;
 		})->filter([](const int& i)->bool {
 			return i > 6;
@@ -37,13 +55,13 @@ int main()
 	new int(5);
 
 	int count2 = make_stream(arr, __crt_countof(arr))
-		>> map<ST3, ST2>([](const ST3& st)->ST2 {
+		>> map<ST3>([](const ST3& st)->ST2 {
 			return st.st2;
-		}) >> map<ST2, ST1>([](const ST2& st)->ST1 {
+		}) >> map<ST2>([](const ST2& st)->ST1 {
 			return st.st1;
-		}) >> map<ST1, ST0>([](const ST1& st)->ST0 {
+		}) >> map<ST1>([](const ST1& st)->ST0 {
 			return st.st0;
-		}) >> map<ST0, int>([](const ST0& st)->int {
+		}) >> map<ST0>([](const ST0& st)->int {
 			return st.i;
 		}) >> filter<int>([](const int& i)->bool {
 			return i > 6;
