@@ -89,8 +89,6 @@ public:
 
 };
 
-#ifdef _DEBUG
-
 MemList theMemList;
 
 void* operator new(size_t size, char* file, char* func, int line){
@@ -111,5 +109,3 @@ void operator delete(void* ptr) {
 		free(ptr);
 	}
 }
-
-#endif

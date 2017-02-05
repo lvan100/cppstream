@@ -1,6 +1,8 @@
 #include "stream.h"
 using namespace cpp::stream;
 
+#include "new.h"
+
 #ifdef _DEBUG
 #define DEBUG_NEW new(__FILE__, __FUNCTION__ ,__LINE__)
 #define new DEBUG_NEW

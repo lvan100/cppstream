@@ -1,10 +1,10 @@
-#pragma once
+#ifndef CPP_STREAM_H
+#define CPP_STREAM_H
 
+#ifdef _MEMDUMP
 #include "new.h"
-
-#ifdef _DEBUG
-#define DEBUG_NEW new(__FILE__, __FUNCTION__ ,__LINE__)
-#define new DEBUG_NEW
+#define DUMP_NEW new(__FILE__, __FUNCTION__ ,__LINE__)
+#define new DUMP_NEW
 #endif
 
 #include "assert.h"
@@ -23,6 +23,9 @@ using namespace std;
 namespace cpp {
 	namespace stream {
 
+		//////////////////////////////////////////////////////////
+		// Lambda表达式的返回值类型推断
+
 		/**
 		 * 获取0个参数的Lambda表达式的返回值类型
 		 */
@@ -38,6 +41,9 @@ namespace cpp {
 		struct ft_1 {
 			typedef decltype(((F*)0)->operator()(*((T*)0))) ret;
 		};
+
+		//////////////////////////////////////////////////////////
+		// 流的实现
 
 		/**
 		 * 数据消费器链条接口
@@ -408,6 +414,9 @@ namespace cpp {
 
 		};
 
+		//////////////////////////////////////////////////////////
+		// 数据源的实现
+
 		/**
 		 * 数组类型的数据源
 		 */
@@ -456,11 +465,20 @@ namespace cpp {
 			return (new ArrayDataSource<T>(arr, size))->stream();
 		}
 
+		//////////////////////////////////////////////////////////
+		// >>操作符的实现
+
+		/**
+		 * 实现流的>>操作符
+		 */
 		template<typename T, typename Sink>
 		auto operator >> (Stream<T>* s, Sink sink) {
 			return sink(s);
 		}
 
+		/**
+		 * 将流映射成其他类型的流
+		 */
 		template<typename F>
 		auto map(F f) {
 			return [f](auto* s) {
@@ -468,6 +486,9 @@ namespace cpp {
 			};
 		};
 
+		/**
+		 * 过滤流中的某些元素
+		 */
 		template<typename F>
 		auto filter(F f) {
 			return [f](auto* s) {
@@ -475,18 +496,27 @@ namespace cpp {
 			};
 		}
 
+		/**
+		 * 跳过流中的某些结果
+		 */
 		auto skip(int nSkip) {
 			return [nSkip](auto* s) {
 				return s->skip(nSkip);
 			};
 		}
 
+		/**
+		 * 限制流中元素的数量
+		 */
 		auto limit(int nLimit) {
 			return [nLimit](auto* s) {
 				return s->limit(nLimit);
 			};
 		}
 
+		/**
+		 * 计算流中元素的数量
+		 */
 		auto count() {
 			return [](auto* s) {
 				return s->count();
@@ -496,7 +526,9 @@ namespace cpp {
 	}
 }
 
-#ifdef _DEBUG
+#ifdef _MEMDUMP
 #undef new
-#undef DEBUG_NEW
+#undef DUMP_NEW
 #endif
+
+#endif /* CPP_STREAM_H */
