@@ -25,6 +25,7 @@ auto time_it(function<void()> test)
 }
 
 // #define MAP_UNFOLD
+#define STREAM_ONESTEP
 
 // #define ENABLE_SKIP
 // #define ENABLE_LIMIT
@@ -80,6 +81,15 @@ void run_performance_test(int size) {
 	auto stream_test = [&]() {
 		int count = make_stream(arr, size)
 
+#ifdef STREAM_ONESTEP
+
+			->filter([](const ST3& st)->bool {
+				int i = st.st2.st1.st0.i;
+				return i > 2600 && i < 4000;
+			})
+
+#else
+
 #ifdef MAP_UNFOLD
 			->map([](const ST3& st)->ST2 {
 				return st.st2;
@@ -92,13 +102,15 @@ void run_performance_test(int size) {
 			})
 #else
 			->map([](const ST3& st)->int {
-					return st.st2.st1.st0.i;
+				return st.st2.st1.st0.i;
 			})
-#endif
+#endif /* MAP_UNFOLD */
 			
 			->filter([](const int& i)->bool {
 				return i > 2600 && i < 4000;
 			})
+
+#endif /* STREAM_ONESTEP */
 
 #ifdef ENABLE_SKIP
 			->skip(5000)
@@ -165,5 +177,23 @@ void run_performance_test(int size) {
  basic time: 6 ms
  stream found: 2614501
  stream time: 172 ms
+
+ 性能测试结果(STREAM_ONESTEP on):
+
+ ENABLE_SKIP  off
+ ENABLE_LIMIT off
+
+ basic found: 2610194
+ basic time: 6 ms
+ stream found: 2610194
+ stream time: 96 ms
+
+ ENABLE_SKIP  on
+ ENABLE_LIMIT off
+
+ basic found: 2607504
+ basic time: 32 ms
+ stream found: 2607504
+ stream time: 97 ms
 
 ************************************************************/

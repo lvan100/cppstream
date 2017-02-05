@@ -90,4 +90,22 @@
 	 stream found: 2614501
 	 stream time: 172 ms
 
-可以看到，经典写法和Stream写法二者的性能相差了30~50倍不止，而且Stream写法的条件组合对性能的影响也很大。
+	性能测试结果(STREAM_ONESTEP on):
+	
+	 ENABLE_SKIP  off
+	 ENABLE_LIMIT off
+	
+	 basic found: 2610194
+	 basic time: 6 ms
+	 stream found: 2610194
+	 stream time: 96 ms
+	
+	 ENABLE_SKIP  on
+	 ENABLE_LIMIT off
+	
+	 basic found: 2607504
+	 basic time: 32 ms
+	 stream found: 2607504
+	 stream time: 97 ms
+
+可以看到，经典写法和Stream写法二者的性能相差了30~50倍不止，而且Stream写法的条件组合对性能的影响也很大，Stream写法的条件组合越精简，性能相差越小。
