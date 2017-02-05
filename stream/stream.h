@@ -461,44 +461,34 @@ namespace cpp {
 			return sink(s);
 		}
 
-		template<typename T, typename F>
+		template<typename F>
 		auto map(F f) {
-			return [f](Stream<T>* s) {
+			return [f](auto* s) {
 				return s->map(f);
 			};
 		};
 
-		template<typename T, typename D>
-		auto map(function<D(const T&)> f) {
-			return [f](Stream<T>* s) {
-				return s->map<D>(f);
-			};
-		};
-
-		template<typename T>
-		auto filter(function<bool(const T&)> f) {
-			return [f](Stream<T>* s) {
+		template<typename F>
+		auto filter(F f) {
+			return [f](auto* s) {
 				return s->filter(f);
 			};
 		}
 
-		template<typename T>
 		auto skip(int nSkip) {
-			return [nSkip](Stream<T>* s) {
+			return [nSkip](auto* s) {
 				return s->skip(nSkip);
 			};
 		}
 
-		template<typename T>
 		auto limit(int nLimit) {
-			return [nLimit](Stream<T>* s) {
+			return [nLimit](auto* s) {
 				return s->limit(nLimit);
 			};
 		}
 
-		template<typename T>
-		auto _count() {
-			return [](Stream<T>* s) {
+		auto count() {
+			return [](auto* s) {
 				return s->count();
 			};
 		}
