@@ -1,5 +1,4 @@
-#include "stream.h"
-using namespace cpp::stream;
+#include "tests.h"
 
 #include "new.h"
 
@@ -23,6 +22,8 @@ template <typename F, typename T>
 typename ft_1<F, T>::ret foo(F f, T t) {
 	return f(t);
 }
+
+#define ENABLE_PERFORMANCE_TEST
 
 int main()
 {
@@ -72,6 +73,10 @@ int main()
 		}) >> skip(4) >> limit(3) >> count();
 
 	cout << count2 << endl;
+
+#ifdef ENABLE_PERFORMANCE_TEST
+	run_performance_test(10000000); // 1Ç§Íò
+#endif
 
 	return 0;
 }

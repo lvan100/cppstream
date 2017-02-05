@@ -4,6 +4,7 @@
     <ClInclude Include="typedefs.h" />
     <ClInclude Include="new.h" />
     <ClInclude Include="stream.h" />
+    <ClInclude Include="tests.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stream.cpp" />

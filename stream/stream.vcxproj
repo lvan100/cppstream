@@ -140,6 +140,7 @@
   <ItemGroup>
     <ClInclude Include="new.h" />
     <ClInclude Include="stream.h" />
+    <ClInclude Include="tests.h" />
     <ClInclude Include="typedefs.h" />
   </ItemGroup>
   <ItemGroup>
