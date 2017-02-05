@@ -24,8 +24,8 @@ auto time_it(function<void()> test)
 	return duration_cast<milliseconds>(now - then);
 }
 
-#define ENABLE_SKIP
-#define ENABLE_LIMIT
+// #define ENABLE_SKIP
+// #define ENABLE_LIMIT
 
 void run_performance_test(int size) {
 
@@ -43,7 +43,16 @@ void run_performance_test(int size) {
 		int limit = 5000;
 
 		for (int i = 0; i < size; i++) {
+
 			int v = arr[i].st2.st1.st0.i;
+
+#if 0
+			ST2 st2 = arr[i].st2;
+			ST1 st1 = st2.st1;
+			ST0 st0 = st1.st0;
+			int v = st0.i;
+#endif
+
 			if (v > 2600 && v < 4000) {
 
 #ifdef ENABLE_SKIP
@@ -109,20 +118,10 @@ void run_performance_test(int size) {
  ENABLE_SKIP  off
  ENABLE_LIMIT off
 
- basic found: 2612060
- basic time: 109 ms
- stream found: 2612060
- stream time: 28623 ms
-
- basic found: 2611855
- basic time: 109 ms
- stream found: 2611855
- stream time: 28571 ms
-
- basic found: 2613512
- basic time: 110 ms
- stream found: 2613512
- stream time: 28498 ms
+ basic found: 2612031
+ basic time: 6 ms
+ stream found: 2612031
+ stream time: 324 ms
 
  ENABLE_SKIP  off
  ENABLE_LIMIT on
@@ -130,25 +129,15 @@ void run_performance_test(int size) {
  basic found: 5000
  basic time: 0 ms
  stream found: 5000
- stream time: 56 ms
-
- basic found: 5000
- basic time: 0 ms
- stream found: 5000
- stream time: 57 ms
+ stream time: 1 ms
 
  ENABLE_SKIP  on
  ENABLE_LIMIT off
 
- basic found: 2603201
- basic time: 109 ms
- stream found: 2603201
- stream time: 28587 ms
-
- basic found: 2604543
- basic time: 108 ms
- stream found: 2604543
- stream time: 28507 ms
+ basic found: 2608040
+ basic time: 31 ms
+ stream found: 2608040
+ stream time: 325 ms
 
  ENABLE_SKIP  on
  ENABLE_LIMIT on
@@ -156,13 +145,6 @@ void run_performance_test(int size) {
  basic found: 5000
  basic time: 0 ms
  stream found: 5000
- stream time: 105 ms
-
- basic found: 5000
- basic time: 1 ms
- stream found: 5000
- stream time: 102 ms
-
- 性能测试结果相当的不容乐观，二者竟然差了1、2百倍。
+ stream time: 1 ms
 
 ************************************************************/

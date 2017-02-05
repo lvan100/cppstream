@@ -23,8 +23,6 @@ typename ft_1<F, T>::ret foo(F f, T t) {
 	return f(t);
 }
 
-#define ENABLE_PERFORMANCE_TEST
-
 int main()
 {
 	foo([]() {
@@ -74,7 +72,7 @@ int main()
 
 	cout << count2 << endl;
 
-#ifdef ENABLE_PERFORMANCE_TEST
+#ifndef _DEBUG
 	run_performance_test(10000000); // 1Ç§Íò
 #endif
 
