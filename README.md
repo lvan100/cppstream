@@ -45,14 +45,16 @@
 
 
  下面是性能测试结果(找出1千万个数据中符合条件的值):
+		
+	性能测试结果(MAP_UNFOLD on):
 	
 	 ENABLE_SKIP  off
 	 ENABLE_LIMIT off
 	
-	 basic found: 2612031
+	 basic found: 2611628
 	 basic time: 6 ms
-	 stream found: 2612031
-	 stream time: 324 ms
+	 stream found: 2611628
+	 stream time: 302 ms
 	
 	 ENABLE_SKIP  off
 	 ENABLE_LIMIT on
@@ -65,10 +67,10 @@
 	 ENABLE_SKIP  on
 	 ENABLE_LIMIT off
 	
-	 basic found: 2608040
-	 basic time: 31 ms
-	 stream found: 2608040
-	 stream time: 325 ms
+	 basic found: 2605156
+	 basic time: 32 ms
+	 stream found: 2605156
+	 stream time: 307 ms
 	
 	 ENABLE_SKIP  on
 	 ENABLE_LIMIT on
@@ -77,5 +79,15 @@
 	 basic time: 0 ms
 	 stream found: 5000
 	 stream time: 1 ms
+	
+	性能测试结果(MAP_UNFOLD off):
+	
+	 ENABLE_SKIP  off
+	 ENABLE_LIMIT off
+	
+	 basic found: 2614501
+	 basic time: 6 ms
+	 stream found: 2614501
+	 stream time: 172 ms
 
-性能测试结果相当的不容乐观，二者竟然差了50倍不止。
+可以看到，经典写法和Stream写法二者的性能相差了30~50倍不止，而且Stream写法的条件组合对性能的影响也很大。
