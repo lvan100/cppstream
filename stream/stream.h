@@ -192,6 +192,29 @@ namespace cpp {
 		};
 
 		/**
+		 * 计数类型的数据消费节点
+		 */
+		template<typename T> class CounterSink : public Sink<T, T> {
+
+			/**
+			 *计数结果
+			 */
+			int count = 0;
+
+		public:
+			virtual bool consum(const T& v) override {
+				count++;
+				return true;
+			}
+
+			/**
+			 * 获取计数结果
+			 */
+			int get() { return count; }
+
+		};
+
+		/**
 		 * 规约类型的数据消费节点
 		 */
 		template<typename T> class ReducerSink : public Sink<T, T> {
@@ -304,6 +327,25 @@ namespace cpp {
 		};
 
 		/**
+		 * 自动释放流管道资源
+		 */
+		class AutoReleasePipeline {
+
+			Pipeline* _pipeline = nullptr;
+
+		public:
+			AutoReleasePipeline(Pipeline* pipeline)
+				: _pipeline(pipeline)
+			{}
+
+			~AutoReleasePipeline() {
+				if (_pipeline != nullptr) {
+					delete _pipeline;
+				}
+			}
+		};
+
+		/**
 		 * 流
 		 */
 		template<typename T> class Stream : public Pipeline {
@@ -345,33 +387,10 @@ namespace cpp {
 			T reduce(T init, function<T(const T&, const T&)> f) {
 
 				ReducerSink<T>* sink = new ReducerSink<T>(init, f);
-				DataSource* dataSource = storeSink(sink);
-				assert(dataSource != nullptr);
+				ConsumeData(sink);
 
-				ISinkChain* ps = this->_sink;
-				Pipeline* pu = this->_upstream;
-
-				for (int i = this->_depth; i > 0; i--) {
-					ps = pu->_sink->link(ps);
-					pu = pu->_upstream;
-				}
-
-				if (dataSource != nullptr) {
-					dataSource->consum(ps);
-				}
-
-				T result = sink->get();
-
-				// 释放计算过程中使用的指针资源
-				{
-					if (dataSource != nullptr) {
-						delete dataSource;
-					}
-
-					delete this;
-				}
-				
-				return result;
+				AutoReleasePipeline arp(this);
+				return sink->get();
 			}
 
 			/**
@@ -410,6 +429,54 @@ namespace cpp {
 				})->reduce(0, [](const int& i, const int& v)->int {
 					return i + v;
 				});
+			}
+
+			/**
+			 * 对流内的对象进行计数(快速版本)
+			 */
+			int quick_count() {
+
+				CounterSink<T>* sink = new CounterSink<T>();
+				ConsumeData(sink);
+
+				AutoReleasePipeline arp(this);
+				return sink->get();
+			}
+
+		private:
+			/**
+			 * 构建数据消费器链条
+			 */
+			ISinkChain* BuildSinkChain() {
+
+				ISinkChain* ps = this->_sink;
+				Pipeline* pu = this->_upstream;
+
+				for (int i = this->_depth; i > 0; i--) {
+					ps = pu->_sink->link(ps);
+					pu = pu->_upstream;
+				}
+
+				return ps;
+			}
+
+			/**
+			 * 开始消费数据
+			 */
+			void ConsumeData(ISinkChain* sink) {
+
+				DataSource* dataSource = storeSink(sink);
+				assert(dataSource != nullptr);
+
+				ISinkChain* ps = BuildSinkChain();
+
+				if (dataSource != nullptr) {
+					dataSource->consum(ps);
+				}
+
+				if (dataSource != nullptr) {
+					delete dataSource;
+				}
 			}
 
 		};

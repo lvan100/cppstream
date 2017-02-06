@@ -1,0 +1,103 @@
+basic found: 2611585
+basic found: 2611585
+basic found: 2611585
+basic time: 7 ms
+basic_unfold found: 2611585
+basic_unfold found: 2611585
+basic_unfold found: 2611585
+basic_unfold time: 8 ms
+
+stream found: 2611585
+stream found: 2611585
+stream found: 2611585
+stream time: 168 ms
+stream_unfold found: 2611585
+stream_unfold found: 2611585
+stream_unfold found: 2611585
+stream_unfold time: 310 ms
+stream_onestep found: 2611585
+stream_onestep found: 2611585
+stream_onestep found: 2611585
+stream_onestep time: 99 ms
+stream_onestep_quick_count found: 2611585
+stream_onestep_quick_count found: 2611585
+stream_onestep_quick_count found: 2611585
+stream_onestep_quick_count time: 78 ms
+
+basic_skip found: 2111585
+basic_skip found: 2111585
+basic_skip found: 2111585
+basic_skip time: 32 ms
+basic_unfold_skip found: 2111585
+basic_unfold_skip found: 2111585
+basic_unfold_skip found: 2111585
+basic_unfold_skip time: 32 ms
+
+stream_skip found: 2111585
+stream_skip found: 2111585
+stream_skip found: 2111585
+stream_skip time: 164 ms
+stream_unfold_skip found: 2111585
+stream_unfold_skip found: 2111585
+stream_unfold_skip found: 2111585
+stream_unfold_skip time: 311 ms
+stream_onestep_skip found: 2111585
+stream_onestep_skip found: 2111585
+stream_onestep_skip found: 2111585
+stream_onestep_skip time: 95 ms
+stream_onestep_skip_quick_count found: 2111585
+stream_onestep_skip_quick_count found: 2111585
+stream_onestep_skip_quick_count found: 2111585
+stream_onestep_skip_quick_count time: 82 ms
+
+basic_limit found: 500000
+basic_limit found: 500000
+basic_limit found: 500000
+basic_limit time: 7 ms
+basic_unfold_limit found: 500000
+basic_unfold_limit found: 500000
+basic_unfold_limit found: 500000
+basic_unfold_limit time: 7 ms
+
+stream_limit found: 500000
+stream_limit found: 500000
+stream_limit found: 500000
+stream_limit time: 34 ms
+stream_unfold_limit found: 500000
+stream_unfold_limit found: 500000
+stream_unfold_limit found: 500000
+stream_unfold_limit time: 61 ms
+stream_onestep_limit found: 500000
+stream_onestep_limit found: 500000
+stream_onestep_limit found: 500000
+stream_onestep_limit time: 20 ms
+stream_onestep_limit_quick_count found: 500000
+stream_onestep_limit_quick_count found: 500000
+stream_onestep_limit_quick_count found: 500000
+stream_onestep_limit_quick_count time: 17 ms
+
+basic_skip_limit found: 500000
+basic_skip_limit found: 500000
+basic_skip_limit found: 500000
+basic_skip_limit time: 14 ms
+basic_unfold_skip_limit found: 500000
+basic_unfold_skip_limit found: 500000
+basic_unfold_skip_limit found: 500000
+basic_unfold_skip_limit time: 14 ms
+
+stream_skip_limit found: 500000
+stream_skip_limit found: 500000
+stream_skip_limit found: 500000
+stream_skip_limit time: 64 ms
+stream_unfold_skip_limit found: 500000
+stream_unfold_skip_limit found: 500000
+stream_unfold_skip_limit found: 500000
+stream_unfold_skip_limit time: 137 ms
+stream_onestep_skip_limit found: 500000
+stream_onestep_skip_limit found: 500000
+stream_onestep_skip_limit found: 500000
+stream_onestep_skip_limit time: 37 ms
+stream_onestep_skip_limit_quick_count found: 500000
+stream_onestep_skip_limit_quick_count found: 500000
+stream_onestep_skip_limit_quick_count found: 500000
+stream_onestep_skip_limit_quick_count time: 33 ms

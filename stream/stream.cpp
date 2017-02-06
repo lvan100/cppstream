@@ -72,9 +72,13 @@ int main()
 
 	cout << count2 << endl;
 
-#ifndef _DEBUG
-	run_performance_test(10000000); // 1Ç§Íò
+#ifdef _DEBUG
+	run_performance_test(1000);  // ²âÊÔÄÚ´æĞ¹Â¶
+#else
+	run_performance_test(10000000); // 1Ç§ÍòÊı¾İ
 #endif
+
+	cout << endl;
 
 	return 0;
 }

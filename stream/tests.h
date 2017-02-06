@@ -32,7 +32,7 @@ auto time_it(function<void()> test) {
 /**
  * Ö´ĞĞĞÔÄÜ²âÊÔ
  */
-void run_performance_test(int size) {
+void run_performance_test(int size, int skip_count, int limit_count) {
 
 	srand((unsigned int)time(nullptr));
 
@@ -41,12 +41,14 @@ void run_performance_test(int size) {
 		arr[i].set(rand() % 5000);
 	}
 
+#if 0
+	#define up_limit	4000
+	#define down_limit  2600
+#else
 	const int up_limit = 4000;
 	const int down_limit = 2600;
-
-	const int skip_count = 500000;
-	const int limit_count = 500000;
-
+#endif
+	
 	// B0
 	{
 		auto basic_test = [&]() {
@@ -143,6 +145,19 @@ void run_performance_test(int size) {
 
 		time = time_it(stream_onestep_test);
 		cout << "stream_onestep time: " << time.count() << " ms" << endl;
+
+		auto stream_onestep_quick_count_test = [&]() {
+			int count = make_stream(arr, size)
+				->filter([&](const ST3& st)->bool {
+					int i = st.st2.st1.st0.i;
+					return i > down_limit && i < up_limit;
+				})->quick_count();
+
+			cout << "stream_onestep_quick_count found: " << count << endl;
+		};
+
+		time = time_it(stream_onestep_quick_count_test);
+		cout << "stream_onestep_quick_count time: " << time.count() << " ms" << endl;
 	}
 
 	cout << endl;
@@ -247,6 +262,19 @@ void run_performance_test(int size) {
 
 		time = time_it(stream_onestep_skip_test);
 		cout << "stream_onestep_skip time: " << time.count() << " ms" << endl;
+
+		auto stream_onestep_skip_quick_count_test = [&]() {
+			int count = make_stream(arr, size)
+				->filter([&](const ST3& st)->bool {
+					int i = st.st2.st1.st0.i;
+					return i > down_limit && i < up_limit;
+				})->skip(skip_count)->quick_count();
+
+			cout << "stream_onestep_skip_quick_count found: " << count << endl;
+		};
+
+		time = time_it(stream_onestep_skip_quick_count_test);
+		cout << "stream_onestep_skip_quick_count time: " << time.count() << " ms" << endl;
 	}
 
 	cout << endl;
@@ -344,15 +372,28 @@ void run_performance_test(int size) {
 		auto stream_onestep_limit_test = [&]() {
 			int count = make_stream(arr, size)
 				->filter([&](const ST3& st)->bool {
-					int i = st.st2.st1.st0.i;
-					return i > down_limit && i < up_limit;
-				})->limit(limit_count)->count();
+				int i = st.st2.st1.st0.i;
+				return i > down_limit && i < up_limit;
+			})->limit(limit_count)->count();
 
 			cout << "stream_onestep_limit found: " << count << endl;
 		};
 
 		time = time_it(stream_onestep_limit_test);
 		cout << "stream_onestep_limit time: " << time.count() << " ms" << endl;
+
+		auto stream_onestep_limit_quick_count_test = [&]() {
+			int count = make_stream(arr, size)
+				->filter([&](const ST3& st)->bool {
+					int i = st.st2.st1.st0.i;
+					return i > down_limit && i < up_limit;
+				})->limit(limit_count)->quick_count();
+
+			cout << "stream_onestep_limit_quick_count found: " << count << endl;
+		};
+
+		time = time_it(stream_onestep_limit_quick_count_test);
+		cout << "stream_onestep_limit_quick_count time: " << time.count() << " ms" << endl;
 	}
 
 	cout << endl;
@@ -463,6 +504,28 @@ void run_performance_test(int size) {
 
 		time = time_it(stream_onestep_skip_limit_test);
 		cout << "stream_onestep_skip_limit time: " << time.count() << " ms" << endl;
+
+		auto stream_onestep_skip_limit_quick_count_test = [&]() {
+			int count = make_stream(arr, size)
+				->filter([&](const ST3& st)->bool {
+					int i = st.st2.st1.st0.i;
+					return i > down_limit && i < up_limit;
+				})->skip(skip_count)->limit(limit_count)->quick_count();
+
+			cout << "stream_onestep_skip_limit_quick_count found: " << count << endl;
+		};
+
+		time = time_it(stream_onestep_skip_limit_quick_count_test);
+		cout << "stream_onestep_skip_limit_quick_count time: " << time.count() << " ms" << endl;
 	}
 
+	cout << endl;
+
+}
+
+void run_performance_test(int size) {
+	run_performance_test(size, 5000, 5000);
+	run_performance_test(size, 50000, 50000);
+	run_performance_test(size, 500000, 500000);
+	run_performance_test(size, 5000000, 5000000);
 }
