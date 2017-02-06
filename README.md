@@ -44,68 +44,72 @@
 	cout << count2 << endl;
 
 
- 下面是性能测试结果(找出1千万个数据中符合条件的值):
+经过几次优化后，经典写法和Stream写法之间的效率差距在逐渐减少，目前已经可以控制在3倍以内。
 		
-	性能测试结果(MAP_UNFOLD on):
-	
-	 ENABLE_SKIP  off
-	 ENABLE_LIMIT off
-	
-	 basic found: 2611628
-	 basic time: 6 ms
-	 stream found: 2611628
-	 stream time: 302 ms
-	
-	 ENABLE_SKIP  off
-	 ENABLE_LIMIT on
-	
-	 basic found: 5000
-	 basic time: 0 ms
-	 stream found: 5000
-	 stream time: 1 ms
-	
-	 ENABLE_SKIP  on
-	 ENABLE_LIMIT off
-	
-	 basic found: 2605156
-	 basic time: 32 ms
-	 stream found: 2605156
-	 stream time: 307 ms
-	
-	 ENABLE_SKIP  on
-	 ENABLE_LIMIT on
-	
-	 basic found: 5000
-	 basic time: 0 ms
-	 stream found: 5000
-	 stream time: 1 ms
-	
-	性能测试结果(MAP_UNFOLD off):
-	
-	 ENABLE_SKIP  off
-	 ENABLE_LIMIT off
-	
-	 basic found: 2614501
-	 basic time: 6 ms
-	 stream found: 2614501
-	 stream time: 172 ms
 
-	性能测试结果(STREAM_ONESTEP on):
-	
-	 ENABLE_SKIP  off
-	 ENABLE_LIMIT off
-	
-	 basic found: 2610194
-	 basic time: 6 ms
-	 stream found: 2610194
-	 stream time: 96 ms
-	
-	 ENABLE_SKIP  on
-	 ENABLE_LIMIT off
-	
-	 basic found: 2607504
-	 basic time: 32 ms
-	 stream found: 2607504
-	 stream time: 97 ms
+测试数组：
 
-可以看到，经典写法和Stream写法二者的性能相差了30~50倍不止，而且Stream写法的条件组合对性能的影响也很大，Stream写法的条件组合越精简，性能相差越小。
+	ST3* arr = new ST3[size];
+	for (int i = 0; i < size;i++) {
+		arr[i].set(rand() % 5000);
+	}
+
+经典写法：
+
+	int count = 0;
+	int skip = skip_count;
+	int limit = limit_count;
+	
+	for (int i = 0; i < size; i++) {
+		int v = arr[i].st2.st1.st0.i;
+		if (v > down_limit && v < up_limit) {
+			count++;
+		}
+	}
+
+Stream 写法：
+
+	int count = make_stream(arr, size)
+		->filter([&](const ST3& st)->bool {
+			int i = st.st2.st1.st0.i;
+			return i > down_limit && i < up_limit;
+		})->quick_count();
+
+
+当size=10000000时，查找2600至4000之间的数据，测试结果如下：
+	
+	basic time: 59 ms
+	stream time: 120 ms
+
+如果在此基础上，查找第500000到1000000个符合条件的数据，测试结果如下：
+
+	basic time: 24 ms
+	stream time: 48 ms
+
+经典写法：
+
+	int count = 0;
+	int skip = skip_count;
+	int limit = limit_count;
+	
+	for (int i = 0; i < size; i++) {
+		int v = arr[i].st2.st1.st0.i;
+		if (v > down_limit && v < up_limit) {
+			if (--skip < 0) {
+				if (--limit < 0) {
+					break;
+				}
+				count++;
+			}
+		}
+	}
+
+Stream 写法：
+
+	int count = make_stream(arr, size)
+			->filter([&](const ST3& st)->bool {
+				int i = st.st2.st1.st0.i;
+				return i > down_limit && i < up_limit;
+			})->skip(skip_count)->limit(limit_count)->quick_count();
+
+虽然二者在执行效率上差距还是很大，但是在写法上明显后者更胜一筹。
