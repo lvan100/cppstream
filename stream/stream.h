@@ -513,6 +513,10 @@ namespace cpp {
 				: _array(arr), _end(size)
 			{}
 
+			ArrayDataSource(T* arr, int start, int size)
+				: _array(arr), _start(start), _end(start + size)
+			{}
+
 			virtual void consum(ISinkChain* sink) override {
 				ISink<T>* tsink = (ISink<T>*)sink;
 				for (int i = _start; i < _end; i++) {
@@ -534,6 +538,11 @@ namespace cpp {
 		template<typename T>
 		Stream<T>* make_stream(T* arr, int size) {
 			return (new ArrayDataSource<T>(arr, size))->stream();
+		}
+
+		template<typename T>
+		Stream<T>* make_stream(T* arr, int start, int size) {
+			return (new ArrayDataSource<T>(arr, start, size))->stream();
 		}
 
 		//////////////////////////////////////////////////////////

@@ -529,3 +529,32 @@ void run_performance_test(int size) {
 	run_performance_test(size, 500000, 500000);
 	run_performance_test(size, 5000000, 5000000);
 }
+
+void array_stream_test() {
+
+	int arr[] = { 0,1,2,3,4,5,6,7,8,9 };
+
+	int count = make_stream(arr, 10)->quick_count();
+	assert(count == 10);
+
+	count = make_stream(arr, 5)->quick_count();
+	assert(count == 5);
+
+	count = make_stream(arr, 0, 5)->quick_count();
+	assert(count == 5);
+
+	count = make_stream(arr, 3, 5)->quick_count();
+	assert(count == 5);
+}
+
+void run_function_test() {
+
+	using Tester = function<void()>;
+	Tester testers[] = {
+		array_stream_test,
+	};
+
+	for (Tester tester : testers) {
+		tester();
+	}
+}
