@@ -555,7 +555,10 @@ void iterator_stream_test() {
 	{
 		vector<int> vi = { 0,1,2,3,4,5,6,7,8,9 };
 
-		int count = make_stream(vi.begin(), vi.end())->quick_count();
+		int count = make_stream(vi)->quick_count();
+		assert(count == 10);
+
+		count = make_stream(vi.begin(), vi.end())->quick_count();
 		assert(count == 10);
 
 		count = make_stream(vi.begin(), vi.begin() + 5)->quick_count();
@@ -568,7 +571,10 @@ void iterator_stream_test() {
 	{
 		list<int> li = { 0,1,2,3,4,5,6,7,8,9 };
 
-		int count = make_stream(li.begin(), li.end())->quick_count();
+		int count = make_stream(li)->quick_count();
+		assert(count == 10);
+
+		count = make_stream(li.begin(), li.end())->quick_count();
 		assert(count == 10);
 
 		auto li_iter_6 = li.begin();
@@ -586,7 +592,10 @@ void iterator_stream_test() {
 	{
 		deque<int> di = { 0,1,2,3,4,5,6,7,8,9 };
 
-		int count = make_stream(di.begin(), di.end())->quick_count();
+		int count = make_stream(di)->quick_count();
+		assert(count == 10);
+
+		count = make_stream(di.begin(), di.end())->quick_count();
 		assert(count == 10);
 
 		count = make_stream(di.begin(), di.begin() + 4)->quick_count();
@@ -598,11 +607,21 @@ void iterator_stream_test() {
 
 }
 
+void repeat_stream_test() {
+
+	int count = make_repeat_stream(1, 10)->quick_count();
+	assert(count == 10);
+
+	count = make_repeat_stream(2, 6)->quick_count();
+	assert(count == 6);
+}
+
 void run_function_test() {
 
 	using Tester = function<void()>;
 	Tester testers[] = {
 		array_stream_test,
+		repeat_stream_test,
 		iterator_stream_test,
 	};
 
