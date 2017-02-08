@@ -513,8 +513,8 @@ namespace cpp {
 				: _array(arr), _end(size)
 			{}
 
-			ArrayDataSource(T* arr, int start, int size)
-				: _array(arr), _start(start), _end(start + size)
+			ArrayDataSource(T* arr, int start, int end)
+				: _array(arr), _start(start), _end(end)
 			{}
 
 			virtual void consum(ISinkChain* sink) override {
@@ -536,13 +536,58 @@ namespace cpp {
 		};
 
 		template<typename T>
-		Stream<T>* make_stream(T* arr, int size) {
+		auto make_stream(T* arr, int size) {
 			return (new ArrayDataSource<T>(arr, size))->stream();
 		}
 
 		template<typename T>
-		Stream<T>* make_stream(T* arr, int start, int size) {
-			return (new ArrayDataSource<T>(arr, start, size))->stream();
+		auto make_stream(T* arr, int start, int end) {
+			return (new ArrayDataSource<T>(arr, start, end))->stream();
+		}
+
+		/**
+		 * 迭代器类型的数据源
+		 */
+		template<typename T, typename Iterator>
+		class IteratorDataSource : public DataSource {
+
+			/**
+			 * 迭代器的终点
+			 */
+			Iterator& _end;
+
+			/**
+			 * 迭代器的起点
+			 */
+			Iterator& _start;
+
+		public:
+			IteratorDataSource(Iterator& begin, Iterator& end)
+				: _start(begin), _end(end)
+			{}
+
+			virtual void consum(ISinkChain* sink) override {
+				ISink<T>* tsink = (ISink<T>*)sink;
+				for (Iterator iter = _start; iter != _end; iter++) {
+					if (!tsink->consum(*iter)) {
+						break;
+					}
+				}
+			}
+
+			/**
+			* 构造流对象
+			*/
+			Stream<T>* stream() {
+				return new Stream<T>(nullptr, this);
+			}
+
+		};
+
+		template<typename Iterator>
+		auto make_stream(Iterator& start, Iterator& end) {
+			using value_type = decltype (*start);
+			return (new IteratorDataSource<value_type, Iterator>(start, end))->stream();
 		}
 
 		//////////////////////////////////////////////////////////

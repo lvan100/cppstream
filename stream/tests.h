@@ -4,6 +4,9 @@
 
 #include "typedefs.h"
 
+#include <list>
+#include <deque>
+#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -537,14 +540,62 @@ void array_stream_test() {
 	int count = make_stream(arr, 10)->quick_count();
 	assert(count == 10);
 
-	count = make_stream(arr, 5)->quick_count();
-	assert(count == 5);
+	count = make_stream(arr, 3)->quick_count();
+	assert(count == 3);
 
 	count = make_stream(arr, 0, 5)->quick_count();
 	assert(count == 5);
 
 	count = make_stream(arr, 3, 5)->quick_count();
-	assert(count == 5);
+	assert(count == 2);
+}
+
+void iterator_stream_test() {
+
+	{
+		vector<int> vi = { 0,1,2,3,4,5,6,7,8,9 };
+
+		int count = make_stream(vi.begin(), vi.end())->quick_count();
+		assert(count == 10);
+
+		count = make_stream(vi.begin(), vi.begin() + 5)->quick_count();
+		assert(count == 5);
+
+		count = make_stream(vi.begin() + 3, vi.end())->quick_count();
+		assert(count == 7);
+	}
+
+	{
+		list<int> li = { 0,1,2,3,4,5,6,7,8,9 };
+
+		int count = make_stream(li.begin(), li.end())->quick_count();
+		assert(count == 10);
+
+		auto li_iter_6 = li.begin();
+		for (int i = 0; i < 6;i++) {
+			li_iter_6++;
+		}
+
+		count = make_stream(li.begin(), li_iter_6)->quick_count();
+		assert(count == 6);
+
+		count = make_stream(li_iter_6, li.end())->quick_count();
+		assert(count == 4);
+	}
+
+	{
+		deque<int> di = { 0,1,2,3,4,5,6,7,8,9 };
+
+		int count = make_stream(di.begin(), di.end())->quick_count();
+		assert(count == 10);
+
+		count = make_stream(di.begin(), di.begin() + 4)->quick_count();
+		assert(count == 4);
+
+		count = make_stream(di.begin() + 4, di.end())->quick_count();
+		assert(count == 6);
+	}
+
 }
 
 void run_function_test() {
@@ -552,6 +603,7 @@ void run_function_test() {
 	using Tester = function<void()>;
 	Tester testers[] = {
 		array_stream_test,
+		iterator_stream_test,
 	};
 
 	for (Tester tester : testers) {
