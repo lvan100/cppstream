@@ -493,7 +493,7 @@ namespace cpp {
 		/**
 		 * 数组类型的数据源
 		 */
-		template<typename T, typename ptr_t = int> class ArrayDataSource : public DataSource {
+		template<typename T, typename ptr_t = size_t> class ArrayDataSource : public DataSource {
 
 			/**
 			 * 数组遍历的终点
@@ -537,12 +537,20 @@ namespace cpp {
 
 		};
 
-		template<typename T, typename ptr_t = int>
+		/**
+		 * 纯C数组类型的流构造函数
+		 */
+		template<typename T, size_t size>
+		auto make_stream(T(&arr)[size]) {
+			return (new ArrayDataSource<T>(arr, size))->stream();
+		}
+
+		template<typename T, typename ptr_t = size_t>
 		auto make_stream(T* arr, ptr_t size) {
 			return (new ArrayDataSource<T>(arr, size))->stream();
 		}
 
-		template<typename T, typename ptr_t = int>
+		template<typename T, typename ptr_t = size_t>
 		auto make_stream(T* arr, ptr_t start, ptr_t end) {
 			return (new ArrayDataSource<T>(arr, start, end))->stream();
 		}

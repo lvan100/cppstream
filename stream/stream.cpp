@@ -23,8 +23,22 @@ typename ft_1<F, T>::ret foo(F f, T t) {
 	return f(t);
 }
 
+template<typename T, int size>
+void test(T(&t)[size]) {
+	for (int i = 0; i < size;i++) {
+		cout << t[i];
+	}
+	cout << endl;
+}
+
 int main()
 {
+	int ia_3[3] = { 0,1,2 };
+	test(ia_3);
+
+	int ia_4[4] = { 0,1,2,3 };
+	test(ia_4);
+
 	foo([]() {
 		return 3;
 	});

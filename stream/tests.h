@@ -537,7 +537,10 @@ void array_stream_test() {
 
 	int arr[] = { 0,1,2,3,4,5,6,7,8,9 };
 
-	int count = make_stream(arr, 10)->quick_count();
+	int count = make_stream(arr)->quick_count();
+	assert(count == 10);
+
+	count = make_stream(arr, 10)->quick_count();
 	assert(count == 10);
 
 	count = make_stream(arr, 3)->quick_count();
