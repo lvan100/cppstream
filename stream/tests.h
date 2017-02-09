@@ -540,16 +540,31 @@ void array_stream_test() {
 	int count = make_stream(arr)->quick_count();
 	assert(count == 10);
 
+	count = make_stream(arr)->reverse()->quick_count();
+	assert(count == 10);
+
 	count = make_stream(arr, 10)->quick_count();
+	assert(count == 10);
+
+	count = make_stream(arr, 10)->reverse()->quick_count();
 	assert(count == 10);
 
 	count = make_stream(arr, 3)->quick_count();
 	assert(count == 3);
 
+	count = make_stream(arr, 3)->reverse()->quick_count();
+	assert(count == 3);
+
 	count = make_stream(arr, 0, 5)->quick_count();
 	assert(count == 5);
 
+	count = make_stream(arr, 0, 5)->reverse()->quick_count();
+	assert(count == 5);
+
 	count = make_stream(arr, 3, 5)->quick_count();
+	assert(count == 2);
+
+	count = make_stream(arr, 3, 5)->reverse()->quick_count();
 	assert(count == 2);
 }
 
@@ -561,13 +576,25 @@ void iterator_stream_test() {
 		int count = make_stream(vi)->quick_count();
 		assert(count == 10);
 
+		count = make_stream(vi, true)->quick_count();
+		assert(count == 10);
+
 		count = make_stream(vi.begin(), vi.end())->quick_count();
+		assert(count == 10);
+
+		count = make_stream(vi.rbegin(), vi.rend())->quick_count();
 		assert(count == 10);
 
 		count = make_stream(vi.begin(), vi.begin() + 5)->quick_count();
 		assert(count == 5);
 
+		count = make_stream(vi.rbegin(), vi.rbegin() + 5)->quick_count();
+		assert(count == 5);
+
 		count = make_stream(vi.begin() + 3, vi.end())->quick_count();
+		assert(count == 7);
+
+		count = make_stream(vi.rbegin() + 3, vi.rend())->quick_count();
 		assert(count == 7);
 	}
 
@@ -577,18 +604,32 @@ void iterator_stream_test() {
 		int count = make_stream(li)->quick_count();
 		assert(count == 10);
 
+		count = make_stream(li, true)->quick_count();
+		assert(count == 10);
+
 		count = make_stream(li.begin(), li.end())->quick_count();
 		assert(count == 10);
 
+		count = make_stream(li.rbegin(), li.rend())->quick_count();
+		assert(count == 10);
+
 		auto li_iter_6 = li.begin();
+		auto li_riter_6 = li.rbegin();
 		for (int i = 0; i < 6;i++) {
 			li_iter_6++;
+			li_riter_6++;
 		}
 
 		count = make_stream(li.begin(), li_iter_6)->quick_count();
 		assert(count == 6);
 
+		count = make_stream(li.rbegin(), li_riter_6)->quick_count();
+		assert(count == 6);
+
 		count = make_stream(li_iter_6, li.end())->quick_count();
+		assert(count == 4);
+
+		count = make_stream(li_riter_6, li.rend())->quick_count();
 		assert(count == 4);
 	}
 
@@ -598,13 +639,25 @@ void iterator_stream_test() {
 		int count = make_stream(di)->quick_count();
 		assert(count == 10);
 
+		count = make_stream(di, true)->quick_count();
+		assert(count == 10);
+
 		count = make_stream(di.begin(), di.end())->quick_count();
+		assert(count == 10);
+
+		count = make_stream(di.rbegin(), di.rend())->quick_count();
 		assert(count == 10);
 
 		count = make_stream(di.begin(), di.begin() + 4)->quick_count();
 		assert(count == 4);
 
+		count = make_stream(di.rbegin(), di.rbegin() + 4)->quick_count();
+		assert(count == 4);
+
 		count = make_stream(di.begin() + 4, di.end())->quick_count();
+		assert(count == 6);
+
+		count = make_stream(di.rbegin() + 4, di.rend())->quick_count();
 		assert(count == 6);
 	}
 
