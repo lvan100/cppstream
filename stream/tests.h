@@ -16,6 +16,13 @@ using namespace std::chrono;
 #include "stream.h"
 using namespace cpp::stream;
 
+#include "new.h"
+
+#ifdef _DEBUG
+#define DEBUG_NEW new(__FILE__, __FUNCTION__ ,__LINE__)
+#define new DEBUG_NEW
+#endif
+
 /**
  * 计算函数执行3次的平均时间
  */
@@ -524,6 +531,7 @@ void run_performance_test(int size, int skip_count, int limit_count) {
 
 	cout << endl;
 
+	delete[] arr;
 }
 
 void run_performance_test(int size) {
@@ -672,12 +680,87 @@ void repeat_stream_test() {
 	assert(count == 6);
 }
 
+void custom_stream_test() {
+
+	struct Node {
+
+		int value = 0;
+		Node* next = nullptr;
+
+	public:
+		Node(int v) {
+			value = v;
+		}
+
+	};
+
+	Node* head = new Node(0);
+
+	Node* curr = head;
+	for (int i = 1; i < 10; i++) {
+		curr->next = new Node(i);
+		curr = curr->next;
+	}
+
+	curr = head;
+	while (curr != nullptr) {
+		cout << curr->value;
+		curr = curr->next;
+	}
+
+	cout << endl;
+
+	class NodePtrDataSource : public DataSource {
+
+		Node* _start;
+
+	public:
+		NodePtrDataSource(Node* start)
+			: _start(start)
+		{}
+
+		virtual void consum(ISinkChain* sink) override {
+			ISink<int>* tsink = (ISink<int>*)sink;
+			if (is_reverse) {
+				assert(false);
+			} else {
+				while (_start != nullptr) {
+					cout << _start->value;
+					_start = _start->next;
+				}
+			}
+		}
+
+		Stream<int>* stream() {
+			return new Stream<int>(nullptr, this);
+		}
+
+	};
+
+	(new NodePtrDataSource(head))->stream()->count();
+	cout << endl;
+
+	(new NodePtrDataSource(head->next->next))->stream()->count();
+	cout << endl;
+
+	curr = head;
+	Node* last = nullptr;
+	while (curr != nullptr) {
+		last = curr;
+		curr = curr->next;
+		delete last;
+	}
+
+	cout << endl;
+}
+
 void run_function_test() {
 
 	using Tester = function<void()>;
 	Tester testers[] = {
 		array_stream_test,
 		repeat_stream_test,
+		custom_stream_test,
 		iterator_stream_test,
 	};
 
@@ -685,3 +768,8 @@ void run_function_test() {
 		tester();
 	}
 }
+
+#ifdef _DEBUG
+#undef new
+#undef DEBUG_NEW
+#endif
