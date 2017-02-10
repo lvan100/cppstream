@@ -124,14 +124,17 @@ namespace cpp {
 			/**
 			 * 还有多少数据需要被跳过
 			 */
-			int _skip = 0;
+			size_t _skip = 0;
 
 		public:
-			SkipperSink(int skip) : _skip(skip)
+			SkipperSink(size_t skip) : _skip(skip)
 			{}
 
 			virtual bool consum(const T& v) override {
-				if (--_skip < 0) {
+				if (_skip > 0) {
+					_skip--;
+
+				} else {
 					// 如果把指针检测去掉反而变慢了，奇怪！
 					if (down != nullptr) {
 						return down->consum(v);
@@ -150,14 +153,16 @@ namespace cpp {
 			/**
 			 * 还有多少数据能够被获取
 			 */
-			int _limit = 0;
+			size_t _limit = 0;
 
 		public:
-			LimiterSink(int limit) : _limit(limit)
+			LimiterSink(size_t limit) : _limit(limit)
 			{}
 
 			virtual bool consum(const T& v) override {
-				if (_limit-- > 0) {
+				if (_limit > 0) {
+					_limit--;
+
 					// 如果把指针检测去掉反而变慢了，奇怪！
 					if (down != nullptr) {
 						return down->consum(v);
@@ -203,7 +208,7 @@ namespace cpp {
 			/**
 			 *计数结果
 			 */
-			int count = 0;
+			size_t count = 0;
 
 		public:
 			virtual bool consum(const T& v) override {
@@ -214,7 +219,7 @@ namespace cpp {
 			/**
 			 * 获取计数结果
 			 */
-			int get() { return count; }
+			size_t get() { return count; }
 
 		};
 
@@ -307,7 +312,7 @@ namespace cpp {
 			/**
 			 * 流管道的深度
 			 */
-			int _depth = 0;
+			size_t _depth = 0;
 
 		public:
 			Pipeline(Pipeline* up, DataSource* ds)
@@ -411,7 +416,7 @@ namespace cpp {
 			/**
 			 * 跳过一些正确结果
 			 */
-			Stream* skip(int nSkip) {
+			Stream* skip(size_t nSkip) {
 				ISinkChain* sink = new SkipperSink<T>(nSkip);
 				DataSource* ds = storeSink(sink);
 				return new Stream<T>(this, ds);
@@ -420,7 +425,7 @@ namespace cpp {
 			/**
 			 * 限制正确结果的数量
 			 */
-			Stream* limit(int nLimit) {
+			Stream* limit(size_t nLimit) {
 				ISinkChain* sink = new LimiterSink<T>(nLimit);
 				DataSource* ds = storeSink(sink);
 				return new Stream<T>(this, ds);
@@ -436,10 +441,10 @@ namespace cpp {
 			/**
 			 * 对流内的对象进行计数
 			 */
-			int count() {
-				return map([](const T& t)->int {
+			size_t count() {
+				return map([](const T& t)->size_t {
 					return 1;
-				})->reduce(0, [](const int& i, const int& v)->int {
+				})->reduce(0, [](const size_t& i, const size_t& v)->size_t {
 					return i + v;
 				});
 			}
@@ -447,7 +452,7 @@ namespace cpp {
 			/**
 			 * 对流内的对象进行计数(快速版本)
 			 */
-			int quick_count() {
+			size_t quick_count() {
 
 				CounterSink<T>* sink = new CounterSink<T>();
 				ConsumeData(sink);
@@ -465,7 +470,7 @@ namespace cpp {
 				ISinkChain* ps = this->_sink;
 				Pipeline* pu = this->_upstream;
 
-				for (int i = this->_depth; i > 0; i--) {
+				for (size_t i = this->_depth; i > 0; i--) {
 					ps = pu->_sink->link(ps);
 					pu = pu->_upstream;
 				}
@@ -728,7 +733,7 @@ namespace cpp {
 		/**
 		 * 跳过流中的某些结果
 		 */
-		auto skip(int nSkip) {
+		auto skip(size_t nSkip) {
 			return [nSkip](auto* s) {
 				return s->skip(nSkip);
 			};
@@ -737,7 +742,7 @@ namespace cpp {
 		/**
 		 * 限制流中元素的数量
 		 */
-		auto limit(int nLimit) {
+		auto limit(size_t nLimit) {
 			return [nLimit](auto* s) {
 				return s->limit(nLimit);
 			};
