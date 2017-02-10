@@ -1,54 +1,54 @@
-basic found: 2610727
-basic found: 2610727
-basic found: 2610727
-basic time: 59 ms
-basic_unfold found: 2610727
-basic_unfold found: 2610727
-basic_unfold found: 2610727
-basic_unfold time: 58 ms
+basic found: 2612386
+basic found: 2612386
+basic found: 2612386
+basic time: 55 ms
+basic_unfold found: 2612386
+basic_unfold found: 2612386
+basic_unfold found: 2612386
+basic_unfold time: 56 ms
 
-stream found: 2610727
-stream found: 2610727
-stream found: 2610727
-stream time: 172 ms
-stream_unfold found: 2610727
-stream_unfold found: 2610727
-stream_unfold found: 2610727
-stream_unfold time: 316 ms
-stream_onestep found: 2610727
-stream_onestep found: 2610727
-stream_onestep found: 2610727
-stream_onestep time: 137 ms
-stream_onestep_quick_count found: 2610727
-stream_onestep_quick_count found: 2610727
-stream_onestep_quick_count found: 2610727
-stream_onestep_quick_count time: 118 ms
+stream found: 2612386
+stream found: 2612386
+stream found: 2612386
+stream time: 131 ms
+stream_unfold found: 2612386
+stream_unfold found: 2612386
+stream_unfold found: 2612386
+stream_unfold time: 195 ms
+stream_onestep found: 2612386
+stream_onestep found: 2612386
+stream_onestep found: 2612386
+stream_onestep time: 114 ms
+stream_onestep_quick_count found: 2612386
+stream_onestep_quick_count found: 2612386
+stream_onestep_quick_count found: 2612386
+stream_onestep_quick_count time: 107 ms
 
-basic_skip found: 2605727
-basic_skip found: 2605727
-basic_skip found: 2605727
-basic_skip time: 61 ms
-basic_unfold_skip found: 2605727
-basic_unfold_skip found: 2605727
-basic_unfold_skip found: 2605727
-basic_unfold_skip time: 63 ms
+basic_skip found: 2607386
+basic_skip found: 2607386
+basic_skip found: 2607386
+basic_skip time: 62 ms
+basic_unfold_skip found: 2607386
+basic_unfold_skip found: 2607386
+basic_unfold_skip found: 2607386
+basic_unfold_skip time: 62 ms
 
-stream_skip found: 2605727
-stream_skip found: 2605727
-stream_skip found: 2605727
-stream_skip time: 175 ms
-stream_unfold_skip found: 2605727
-stream_unfold_skip found: 2605727
-stream_unfold_skip found: 2605727
-stream_unfold_skip time: 319 ms
-stream_onestep_skip found: 2605727
-stream_onestep_skip found: 2605727
-stream_onestep_skip found: 2605727
-stream_onestep_skip time: 139 ms
-stream_onestep_skip_quick_count found: 2605727
-stream_onestep_skip_quick_count found: 2605727
-stream_onestep_skip_quick_count found: 2605727
-stream_onestep_skip_quick_count time: 122 ms
+stream_skip found: 2607386
+stream_skip found: 2607386
+stream_skip found: 2607386
+stream_skip time: 133 ms
+stream_unfold_skip found: 2607386
+stream_unfold_skip found: 2607386
+stream_unfold_skip found: 2607386
+stream_unfold_skip time: 198 ms
+stream_onestep_skip found: 2607386
+stream_onestep_skip found: 2607386
+stream_onestep_skip found: 2607386
+stream_onestep_skip time: 117 ms
+stream_onestep_skip_quick_count found: 2607386
+stream_onestep_skip_quick_count found: 2607386
+stream_onestep_skip_quick_count found: 2607386
+stream_onestep_skip_quick_count time: 110 ms
 
 basic_limit found: 5000
 basic_limit found: 5000
@@ -70,16 +70,16 @@ stream_unfold_limit time: 1 ms
 stream_onestep_limit found: 5000
 stream_onestep_limit found: 5000
 stream_onestep_limit found: 5000
-stream_onestep_limit time: 0 ms
+stream_onestep_limit time: 1 ms
 stream_onestep_limit_quick_count found: 5000
 stream_onestep_limit_quick_count found: 5000
 stream_onestep_limit_quick_count found: 5000
-stream_onestep_limit_quick_count time: 2 ms
+stream_onestep_limit_quick_count time: 1 ms
 
 basic_skip_limit found: 5000
 basic_skip_limit found: 5000
 basic_skip_limit found: 5000
-basic_skip_limit time: 1 ms
+basic_skip_limit time: 0 ms
 basic_unfold_skip_limit found: 5000
 basic_unfold_skip_limit found: 5000
 basic_unfold_skip_limit found: 5000
@@ -92,7 +92,7 @@ stream_skip_limit time: 1 ms
 stream_unfold_skip_limit found: 5000
 stream_unfold_skip_limit found: 5000
 stream_unfold_skip_limit found: 5000
-stream_unfold_skip_limit time: 3 ms
+stream_unfold_skip_limit time: 1 ms
 stream_onestep_skip_limit found: 5000
 stream_onestep_skip_limit found: 5000
 stream_onestep_skip_limit found: 5000

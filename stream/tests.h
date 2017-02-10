@@ -8,6 +8,7 @@
 #include <deque>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 #include <chrono>
@@ -26,13 +27,13 @@ using namespace cpp::stream;
 /**
  * 计算函数执行3次的平均时间
  */
-auto time_it(function<void()> test) {
+template<typename F> auto time_it(F f) {
 
 	high_resolution_clock::duration all(0);
 
 	for (int i = 0; i < 3; i++) {
 		auto then = high_resolution_clock::now();
-		test();
+		f();
 		all += high_resolution_clock::now() - then;
 	}
 
@@ -50,6 +51,29 @@ void run_performance_test(int size, int skip_count, int limit_count) {
 	for (int i = 0; i < size;i++) {
 		arr[i].set(rand() % 5000);
 	}
+
+	// 测试lambda表达式和function的性能差异
+	{
+		auto time = time_it([&]() {
+			sort(arr, arr + size, [](const ST3& left, const ST3& right)->bool {
+				return left.st2.st1.st0.i < right.st2.st1.st0.i;
+			});
+		});
+
+		cout << "lambda time: " << time.count() << " ms" << endl;
+
+		time = time_it([&]() {
+			sort(arr, arr + size, function<bool(const ST3&, const ST3&)>(
+				[](const ST3& left, const ST3& right)->bool {
+				return left.st2.st1.st0.i < right.st2.st1.st0.i;
+			}
+			));
+		});
+
+		cout << "function time: " << time.count() << " ms" << endl;
+	}
+
+	cout << endl;
 
 #if 0
 	#define up_limit	4000
@@ -545,9 +569,10 @@ void array_stream_test() {
 
 	int arr[] = { 0,1,2,3,4,5,6,7,8,9 };
 
-	int found = make_stream(arr)->findFirst([](const int& v)->bool {
-		return v > 6;
-	}, -1);
+	int found = make_stream(arr)
+		->filter([](const int& v)->bool {
+			return v > 6;
+		})->findFirst(-1);
 	assert(found == 7);
 
 	int count = make_stream(arr)->quick_count();
@@ -586,9 +611,10 @@ void iterator_stream_test() {
 	{
 		vector<int> vi = { 0,1,2,3,4,5,6,7,8,9 };
 
-		int found = make_stream(vi)->findFirst([](const int& v)->bool {
-			return v > 7;
-		}, -1);
+		int found = make_stream(vi)
+			->filter([](const int& v)->bool {
+				return v > 7;
+			})->findFirst(-1);
 		assert(found == 8);
 
 		int count = make_stream(vi)->quick_count();
@@ -619,9 +645,10 @@ void iterator_stream_test() {
 	{
 		list<int> li = { 0,1,2,3,4,5,6,7,8,9 };
 
-		int found = make_stream(li)->findFirst([](const int& v)->bool {
-			return v > 8;
-		}, -1);
+		int found = make_stream(li)
+			->filter([](const int& v)->bool {
+				return v > 8;
+			})->findFirst(-1);
 		assert(found == 9);
 
 		int count = make_stream(li)->quick_count();
@@ -659,9 +686,10 @@ void iterator_stream_test() {
 	{
 		deque<int> di = { 0,1,2,3,4,5,6,7,8,9 };
 
-		int found = make_stream(di)->findFirst([](const int& v)->bool {
-			return v > 9;
-		}, -1);
+		int found = make_stream(di)
+			->filter([](const int& v)->bool {
+				return v > 9;
+			})->findFirst(-1);
 		assert(found == -1);
 
 		int count = make_stream(di)->quick_count();
@@ -772,15 +800,14 @@ void custom_stream_test() {
 
 void run_function_test() {
 
-	using Tester = function<void()>;
-	Tester testers[] = {
+	function<void()> testers[] = {
 		array_stream_test,
 		repeat_stream_test,
 		custom_stream_test,
 		iterator_stream_test,
 	};
 
-	for (Tester tester : testers) {
+	for (auto& tester : testers) {
 		tester();
 	}
 }

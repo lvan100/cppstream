@@ -93,16 +93,15 @@ namespace cpp {
 		/**
 		 * 映射类型的数据消费器
 		 */
-		template<typename T, typename D> class MapperSink : public Sink<T, D> {
+		template<typename T, typename D, typename F> class MapperSink : public Sink<T, D> {
 
 			/**
-			 * 映射函数
+			 * 映射函数，原型一般为 (const T&)->D 或者 (const T&)->D&&。
 			 */
-			using Mapper = function<D(const T&)>;
-			Mapper _f;
+			F _f;
 
 		public:
-			MapperSink(Mapper f) : _f(f)
+			MapperSink(F f) : _f(f)
 			{}
 
 			virtual bool consum(const T& v) override {
@@ -178,16 +177,15 @@ namespace cpp {
 		/**
 		 * 过滤类型的数据消费节点
 		 */
-		template<typename T> class FilterSink : public Sink<T, T> {
+		template<typename T, typename F> class FilterSink : public Sink<T, T> {
 
 			/**
-			 * 过滤函数
+			 * 过滤函数，原型一般为 (const T&)->bool。
 			 */
-			using Filter = function<bool(const T&)>;
-			Filter _f;
+			F _f;
 
 		public:
-			FilterSink(Filter f) : _f(f)
+			FilterSink(F f) : _f(f)
 			{}
 
 			virtual bool consum(const T& v) override {
@@ -226,13 +224,12 @@ namespace cpp {
 		/**
 		 * 规约类型的数据消费节点
 		 */
-		template<typename T> class ReducerSink : public Sink<T, T> {
+		template<typename T, typename F> class ReducerSink : public Sink<T, T> {
 
 			/**
-			 * 规约函数
+			 * 规约函数，原型一般为 (const T&, const T&)->T。
 			 */
-			using Reducer = function<T(const T&, const T&)>;
-			Reducer _f;
+			F _f;
 
 			/**
 			 * 保存规约处理后的结果
@@ -240,7 +237,7 @@ namespace cpp {
 			T _value;
 
 		public:
-			ReducerSink(T init, Reducer f) : _value(init), _f(f)
+			ReducerSink(T init, F f) : _value(init), _f(f)
 			{}
 
 			virtual ISinkChain* link(ISinkChain* down) override {
@@ -266,12 +263,6 @@ namespace cpp {
 		template<typename T> class FirstFinderSink : public Sink<T, T> {
 
 			/**
-			 * 查找函数
-			 */
-			using Finder = function<bool(const T&)>;
-			Finder _f;
-
-			/**
 			 * 是否已经找到结果
 			 */
 			bool _found = false;
@@ -282,16 +273,13 @@ namespace cpp {
 			T _value;
 
 		public:
-			FirstFinderSink(Finder f, T def) : _f(f), _value(def)
+			FirstFinderSink(T def) : _value(def)
 			{}
 
 			virtual bool consum(const T& v) override {
-				if (_f(v)) {
-					_value = v;
-					_found = true;
-					return false;
-				}
-				return true;
+				_value = v;
+				_found = true;
+				return false;
 			}
 
 			/**
@@ -425,15 +413,8 @@ namespace cpp {
 			 * 将当前流转换为其他流
 			 */
 			template<typename F> auto map(F f) {
-				function<typename ft_1<F, T>::ret(const T&)> fmap = f;
-				return map(fmap); // Stream<typename ft_1<F, T>::ret>*
-			}
-
-			/**
-			 * 将当前流转换为其他流
-			 */
-			template<typename D> Stream<D>* map(function<D(const T&)> f) {
-				ISinkChain* sink = new MapperSink<T, D>(f);
+				using D = typename ft_1<F, T>::ret;
+				ISinkChain* sink = new MapperSink<T, D, F>(f);
 				DataSource* ds = storeSink(sink);
 				return new Stream<D>(this, ds);
 			}
@@ -441,9 +422,9 @@ namespace cpp {
 			/**
 			 * 对当前流进行归约操作
 			 */
-			T reduce(T init, function<T(const T&, const T&)> f) {
+			template<typename F> T reduce(T init, F f) {
 
-				ReducerSink<T>* sink = new ReducerSink<T>(init, f);
+				ReducerSink<T, F>* sink = new ReducerSink<T, F>(init, f);
 				ConsumeData(sink);
 
 				AutoReleasePipeline arp(this);
@@ -453,8 +434,8 @@ namespace cpp {
 			/**
 			 * 对流中的元素进行过滤
 			 */
-			Stream* filter(function<bool(const T&)> f) {
-				ISinkChain* sink = new FilterSink<T>(f);
+			template<typename F> Stream* filter(F f) {
+				ISinkChain* sink = new FilterSink<T, F>(f);
 				DataSource* ds = storeSink(sink);
 				return new Stream<T>(this, ds);
 			}
@@ -510,9 +491,9 @@ namespace cpp {
 			/**
 			 * 找到第一个符合条件的数据
 			 */
-			T findFirst(function<bool(const T&)> f, T def) {
+			T findFirst(T def) {
 
-				FirstFinderSink<T>* sink = new FirstFinderSink<T>(f, def);
+				FirstFinderSink<T>* sink = new FirstFinderSink<T>(def);
 				ConsumeData(sink);
 
 				AutoReleasePipeline arp(this);
