@@ -545,6 +545,11 @@ void array_stream_test() {
 
 	int arr[] = { 0,1,2,3,4,5,6,7,8,9 };
 
+	int found = make_stream(arr)->findFirst([](const int& v)->bool {
+		return v > 6;
+	}, -1);
+	assert(found == 7);
+
 	int count = make_stream(arr)->quick_count();
 	assert(count == 10);
 
@@ -581,6 +586,11 @@ void iterator_stream_test() {
 	{
 		vector<int> vi = { 0,1,2,3,4,5,6,7,8,9 };
 
+		int found = make_stream(vi)->findFirst([](const int& v)->bool {
+			return v > 7;
+		}, -1);
+		assert(found == 8);
+
 		int count = make_stream(vi)->quick_count();
 		assert(count == 10);
 
@@ -608,6 +618,11 @@ void iterator_stream_test() {
 
 	{
 		list<int> li = { 0,1,2,3,4,5,6,7,8,9 };
+
+		int found = make_stream(li)->findFirst([](const int& v)->bool {
+			return v > 8;
+		}, -1);
+		assert(found == 9);
 
 		int count = make_stream(li)->quick_count();
 		assert(count == 10);
@@ -643,6 +658,11 @@ void iterator_stream_test() {
 
 	{
 		deque<int> di = { 0,1,2,3,4,5,6,7,8,9 };
+
+		int found = make_stream(di)->findFirst([](const int& v)->bool {
+			return v > 9;
+		}, -1);
+		assert(found == -1);
 
 		int count = make_stream(di)->quick_count();
 		assert(count == 10);

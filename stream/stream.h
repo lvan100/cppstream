@@ -174,7 +174,7 @@ namespace cpp {
 			}
 
 		};
-
+		
 		/**
 		 * 过滤类型的数据消费节点
 		 */
@@ -257,6 +257,52 @@ namespace cpp {
 			 * 获取规约处理后的结果
 			 */
 			T get() { return _value; }
+
+		};
+
+		/**
+		 * 查找第一个符合条件的数据
+		 */
+		template<typename T> class FirstFinderSink : public Sink<T, T> {
+
+			/**
+			 * 查找函数
+			 */
+			using Finder = function<bool(const T&)>;
+			Finder _f;
+
+			/**
+			 * 是否已经找到结果
+			 */
+			bool _found = false;
+
+			/**
+			 * 查找到的结果
+			 */
+			T _value;
+
+		public:
+			FirstFinderSink(Finder f, T def) : _f(f), _value(def)
+			{}
+
+			virtual bool consum(const T& v) override {
+				if (_f(v)) {
+					_value = v;
+					_found = true;
+					return false;
+				}
+				return true;
+			}
+
+			/**
+			 * 获取查找结果
+			 */
+			T& get() { return _value; }
+
+			/**
+			 * 是否已经找到结果
+			 */
+			bool found() { return _found; }
 
 		};
 
@@ -455,6 +501,18 @@ namespace cpp {
 			size_t quick_count() {
 
 				CounterSink<T>* sink = new CounterSink<T>();
+				ConsumeData(sink);
+
+				AutoReleasePipeline arp(this);
+				return sink->get();
+			}
+
+			/**
+			 * 找到第一个符合条件的数据
+			 */
+			T findFirst(function<bool(const T&)> f, T def) {
+
+				FirstFinderSink<T>* sink = new FirstFinderSink<T>(f, def);
 				ConsumeData(sink);
 
 				AutoReleasePipeline arp(this);
@@ -754,6 +812,25 @@ namespace cpp {
 		auto count() {
 			return [](auto* s) {
 				return s->count();
+			};
+		}
+
+		/**
+		 * 计算流中元素的数量(快速版本)
+		 */
+		auto quick_count() {
+			return [](auto* s) {
+				return s->quick_count();
+			};
+		}
+
+		/**
+		 * 找到第一个符合条件的数据
+		 */
+		template<typename F, typename T>
+		auto findFirst(F f, T def) {
+			return [&f, &def](auto* s) {
+				return s->findFirst(f, def);
 			};
 		}
 
