@@ -584,7 +584,7 @@ void iterator_stream_test() {
 		int count = make_stream(vi)->quick_count();
 		assert(count == 10);
 
-		count = make_stream(vi, true)->quick_count();
+		count = make_stream(vi, Reverse::True)->quick_count();
 		assert(count == 10);
 
 		count = make_stream(vi.begin(), vi.end())->quick_count();
@@ -612,7 +612,7 @@ void iterator_stream_test() {
 		int count = make_stream(li)->quick_count();
 		assert(count == 10);
 
-		count = make_stream(li, true)->quick_count();
+		count = make_stream(li, Reverse::True)->quick_count();
 		assert(count == 10);
 
 		count = make_stream(li.begin(), li.end())->quick_count();
@@ -647,7 +647,7 @@ void iterator_stream_test() {
 		int count = make_stream(di)->quick_count();
 		assert(count == 10);
 
-		count = make_stream(di, true)->quick_count();
+		count = make_stream(di, Reverse::True)->quick_count();
 		assert(count == 10);
 
 		count = make_stream(di.begin(), di.end())->quick_count();
@@ -721,13 +721,9 @@ void custom_stream_test() {
 
 		virtual void consum(ISinkChain* sink) override {
 			ISink<int>* tsink = (ISink<int>*)sink;
-			if (is_reverse) {
-				assert(false);
-			} else {
-				while (_start != nullptr) {
-					cout << _start->value;
-					_start = _start->next;
-				}
+			while (_start != nullptr) {
+				cout << _start->value;
+				_start = _start->next;
 			}
 		}
 

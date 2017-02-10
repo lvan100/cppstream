@@ -260,23 +260,9 @@ namespace cpp {
 		 */
 		class DataSource {
 
-		protected:
-			/**
-			 * 是否逆序输出
-			 */
-			bool is_reverse = false;
-
 		public:
-			virtual ~DataSource()
-			{}
-
-			/**
-			 * 逆序输出
-			 */
-			void reverse() {
-				is_reverse = true;
-			}
-
+			virtual ~DataSource() {}
+			
 			/**
 			 * 消费数据
 			 */
@@ -443,8 +429,7 @@ namespace cpp {
 			/**
 			 * 逆序输出
 			 */
-			Stream* reverse() {
-				_dataSource->reverse();
+			Stream* reverse() {				
 				return this;
 			}
 
@@ -513,9 +498,22 @@ namespace cpp {
 		// 数据源的实现
 
 		/**
+		 * 数据源是否逆序遍历，不使用bool是为了区分模板，否则会混淆
+		 */
+		enum Reverse {
+			False /* 正序 */,
+			True  /* 逆序 */
+		};
+
+		/**
 		 * 数组类型的数据源
 		 */
 		template<typename T> class ArrayDataSource : public DataSource {
+
+			/**
+			 * 是否逆序输出
+			 */
+			Reverse _reverse = Reverse::False;
 
 			/**
 			 * 数组元素的指针
@@ -533,17 +531,17 @@ namespace cpp {
 			ptrdiff_t _start = 0;
 
 		public:
-			ArrayDataSource(T* arr, ptrdiff_t end)
-				: _array(arr), _start(0), _end(end)
+			ArrayDataSource(T* arr, ptrdiff_t end, Reverse reverse)
+				: _array(arr), _start(0), _end(end), _reverse(reverse)
 			{}
 
-			ArrayDataSource(T* arr, ptrdiff_t start, ptrdiff_t end)
-				: _array(arr), _start(start), _end(end)
+			ArrayDataSource(T* arr, ptrdiff_t start, ptrdiff_t end, Reverse reverse)
+				: _array(arr), _start(start), _end(end), _reverse(reverse)
 			{}
 
 			virtual void consum(ISinkChain* sink) override {
 				ISink<T>* tsink = (ISink<T>*) sink;
-				if (is_reverse) {
+				if (_reverse == Reverse::True) {
 					for (ptrdiff_t i = _end - 1; i >= _start; --i) {
 						if (!tsink->consum(_array[i])) {
 							break;
@@ -571,24 +569,24 @@ namespace cpp {
 		 * 纯C数组类型的流构造函数
 		 */
 		template<typename T, size_t size>
-		auto make_stream(T(&arr)[size]) {
-			return (new ArrayDataSource<T>(arr, size))->stream();
+		auto make_stream(T(&arr)[size], Reverse reverse = Reverse::False) {
+			return (new ArrayDataSource<T>(arr, size, reverse))->stream();
 		}
 
 		/**
 		 * 指针数组类型的流构造函数
 		 */
 		template<typename T>
-		auto make_stream(T* arr, ptrdiff_t end) {
-			return (new ArrayDataSource<T>(arr, end))->stream();
+		auto make_stream(T* arr, ptrdiff_t end, Reverse reverse = Reverse::False) {
+			return (new ArrayDataSource<T>(arr, end, reverse))->stream();
 		}
 
 		/**
 		 * 指针数组类型的流构造函数
 		 */
 		template<typename T>
-		auto make_stream(T* arr, ptrdiff_t start, ptrdiff_t end) {
-			return (new ArrayDataSource<T>(arr, start, end))->stream();
+		auto make_stream(T* arr, ptrdiff_t start, ptrdiff_t end, Reverse reverse = Reverse::False) {
+			return (new ArrayDataSource<T>(arr, start, end, reverse))->stream();
 		}
 
 		/**
@@ -614,15 +612,11 @@ namespace cpp {
 
 			virtual void consum(ISinkChain* sink) override {
 				ISink<T>* tsink = (ISink<T>*)sink;
-				if (is_reverse) {
-					assert(false);
-				} else {
-					for (Iterator iter = _begin; iter != _end; iter++) {
-						if (!tsink->consum(*iter)) {
-							break;
-						}
+				for (Iterator iter = _begin; iter != _end; iter++) {
+					if (!tsink->consum(*iter)) {
+						break;
 					}
-				}				
+				}
 			}
 
 			/**
@@ -646,11 +640,11 @@ namespace cpp {
 		 * STL标准容器的流构造函数
 		 */
 		template<typename Container>
-		auto make_stream(Container& container, bool reverse = false) {
-			if (reverse) {
-				return (new IteratorDataSource<Container::value_type, Container::reverse_iterator>(container.rbegin(), container.rend()))->stream();
+		auto make_stream(Container& container, Reverse reverse = Reverse::False) {
+			if (reverse == Reverse::False) {
+				return (new IteratorDataSource<Container::value_type, Container::iterator>(container.begin(), container.end()))->stream();
 			}
-			return (new IteratorDataSource<Container::value_type, Container::iterator>(container.begin(), container.end()))->stream();
+			return (new IteratorDataSource<Container::value_type, Container::reverse_iterator>(container.rbegin(), container.rend()))->stream();
 		}
 
 		/**
