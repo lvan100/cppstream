@@ -106,11 +106,7 @@ namespace cpp {
 
 			virtual bool consum(const T& v) override {
 				D d = _f(v);
-				// 如果把指针检测去掉反而变慢了，奇怪！
-				if (down != nullptr) {
-					return down->consum(d);
-				}
-				return true;
+				return down->consum(d);
 			}
 
 		};
@@ -132,14 +128,11 @@ namespace cpp {
 			virtual bool consum(const T& v) override {
 				if (_skip > 0) {
 					_skip--;
+					return true;
 
 				} else {
-					// 如果把指针检测去掉反而变慢了，奇怪！
-					if (down != nullptr) {
-						return down->consum(v);
-					}
+					return down->consum(v);
 				}
-				return true;
 			}
 
 		};
@@ -161,12 +154,7 @@ namespace cpp {
 			virtual bool consum(const T& v) override {
 				if (_limit > 0) {
 					_limit--;
-
-					// 如果把指针检测去掉反而变慢了，奇怪！
-					if (down != nullptr) {
-						return down->consum(v);
-					}
-					return true;
+					return down->consum(v);
 				} else {
 					return false;
 				}
@@ -189,8 +177,7 @@ namespace cpp {
 			{}
 
 			virtual bool consum(const T& v) override {
-				// 如果把指针检测去掉反而变慢了，奇怪！
-				if (_f(v) && down != nullptr) {
+				if (_f(v)) {
 					return down->consum(v);
 				}
 				return true;

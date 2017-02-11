@@ -798,7 +798,46 @@ void custom_stream_test() {
 	cout << endl;
 }
 
+template<typename T> class Base {
+
+public:
+	virtual void consume(const T& value) = 0;
+
+	virtual ~Base() { cout << "~Base" << endl; }
+
+};
+
+template<typename T> class Derive : public Base<T> {
+
+	T _init;
+
+public:
+	Derive(T value) : _init(value)
+	{}
+
+	virtual void consume(const T& value) {
+		cout << _init + value << endl;
+	}
+
+};
+
 void run_function_test() {
+
+	Derive<int> d(3);
+	d.consume(4);
+
+	// TODO 我想使用虚函数表更直接的执行sink的
+	// 虚函数以提升性能，但似乎没有办法做到。
+
+	//int* vfptr = (int*)(*(int*)(&d));
+
+	//typedef void(*F1)(Derive<int>*, const int&);
+	//F1 pf1 = (F1)vfptr[0];
+	//pf1(&d, 5);
+
+	//typedef void(*F2)(void);
+	//F2 pf2 = (F2)vfptr[1];
+	//pf2();
 
 	function<void()> testers[] = {
 		array_stream_test,
