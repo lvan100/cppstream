@@ -558,11 +558,68 @@ void run_performance_test(int size, int skip_count, int limit_count) {
 	delete[] arr;
 }
 
+template<typename F> auto time_it(F f, int count, int& out) {
+
+	auto then = high_resolution_clock::now();
+	for (int i = 0; i < count; i++) {
+		out = f();
+	}
+
+	auto diff = high_resolution_clock::now() - then;
+	return duration_cast<milliseconds>(diff);
+}
+
+void performance__simple_pipe_line(int loopCount, int vectorSize)
+{
+	std::vector<int> ints;
+	ints.reserve(vectorSize);
+
+	for (auto iter = 0; iter < vectorSize; ++iter) {
+		ints.push_back(iter);
+	}
+
+	int result = 0;
+
+	auto cs_func = [&]() {
+		return make_stream(ints)
+			->filter([](const int& v)->bool {
+				return v % 2 == 0;
+			})->map([](const int& v)->int {
+				return v + 1;
+			})->reduce(0, [](const int& u, const int& v)->int {
+				return u + v;
+			});
+	};
+
+	std::cout << "cs_sum: " << cs_func() << std::endl;
+	auto cs_time = time_it(cs_func, loopCount, result);
+	std::cout << "cs_time: " << cs_time.count() << " ms" << std::endl;
+
+	auto classic_func = [&]() {
+		auto sum = 0;
+		for (auto && v : ints) {
+			if (v % 2 == 0) {
+				sum += (v + 1);
+			}
+		}
+		return sum;
+	};
+
+	std::cout << "classic_sum: " << classic_func() << std::endl;
+	auto classic_time = time_it(classic_func, loopCount, result);
+	std::cout << "classic_time: " << classic_time.count() << " ms" << std::endl;
+}
+
 void run_performance_test(int size) {
+
+#if 0
 	run_performance_test(size, 5000, 5000);
 	run_performance_test(size, 50000, 50000);
 	run_performance_test(size, 500000, 500000);
 	run_performance_test(size, 5000000, 5000000);
+#endif
+
+	performance__simple_pipe_line(100000, 10000);
 }
 
 void array_stream_test() {
