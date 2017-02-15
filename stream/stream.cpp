@@ -72,13 +72,13 @@ int main()
 	new int(5);
 
 	int count2 = make_stream(arr, __crt_countof(arr))
-		>> map([](const ST3& st)->ST2 {
+		>> cpp::stream::map([](const ST3& st)->ST2 {
 			return st.st2;
-		}) >> map([](const ST2& st)->ST1 {
+		}) >> cpp::stream::map([](const ST2& st)->ST1 {
 			return st.st1;
-		}) >> map([](const ST1& st)->ST0 {
+		}) >> cpp::stream::map([](const ST1& st)->ST0 {
 			return st.st0;
-		}) >> map([](const ST0& st)->int {
+		}) >> cpp::stream::map([](const ST0& st)->int {
 			return st.i;
 		}) >> filter([](const int& i)->bool {
 			return i > 6;

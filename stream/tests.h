@@ -24,6 +24,8 @@ using namespace cpp::stream;
 #define new DEBUG_NEW
 #endif
 
+#include "cpp_streams\\cpp_streams.hpp"
+
 /**
  * 计算函数执行3次的平均时间
  */
@@ -75,7 +77,7 @@ void run_performance_test(int size, int skip_count, int limit_count) {
 
 	cout << endl;
 
-#if 0
+#if 1
 	#define up_limit	4000
 	#define down_limit  2600
 #else
@@ -192,6 +194,24 @@ void run_performance_test(int size, int skip_count, int limit_count) {
 
 		time = time_it(stream_onestep_quick_count_test);
 		cout << "stream_onestep_quick_count time: " << time.count() << " ms" << endl;
+	}
+
+	cout << endl;
+
+	// CppStreams0
+	{
+		auto cpp_streams = [&]() {
+			int count = cpp_streams::from_range(arr, arr + size)
+				>> cpp_streams::filter([&](const ST3* st)->bool {
+				int i = st->st2.st1.st0.i;
+				return i > down_limit && i < up_limit;
+			}) >> cpp_streams::to_length;
+
+			cout << "cpp_streams found: " << count << endl;
+		};
+
+		auto time = time_it(cpp_streams);
+		cout << "cpp_streams time: " << time.count() << " ms" << endl;
 	}
 
 	cout << endl;
@@ -612,7 +632,7 @@ void performance__simple_pipe_line(int loopCount, int vectorSize)
 
 void run_performance_test(int size) {
 
-#if 0
+#if 1
 	run_performance_test(size, 5000, 5000);
 	run_performance_test(size, 50000, 50000);
 	run_performance_test(size, 500000, 500000);
