@@ -1,5 +1,10 @@
 # cppstream
 
+### 2018-11-16:
+
+现在有了更好的选择，可以重载 | 运算符，参考 http://pfultz2.com/blog/2013/02/14/extensions/
+
+
 ### 2017-02-11: 
 
 今天测试了一下我的版本和 [mrange/CppStreams](https://github.com/mrange/CppStreams) 版本之间的性能，发现 [mrange/CppStreams](https://github.com/mrange/CppStreams) 性能更好，所以在这里郑重推荐一下这个库！虽然这个库最近不怎么更新了，但是还是实现了绝大部分的功能。另外，这个库自带的性能测试示例不十分准确，因为编译期优化了经典写法，导致测试结果相差非常大，但事实上不是这样的，我对他的测试稍稍改动了一下，发现他实现的Stream版本比Classic版本还要高效，所以我必须再次推荐这个库，甚至希望将来有可能j将其加入到标准库中！
